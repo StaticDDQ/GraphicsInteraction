@@ -11,10 +11,15 @@ public class CameraControl : MonoBehaviour {
     private float pitch;
     private float yaw;
     private float roll;
+    private Transform cam;
 
 	// Use this for initialization
 	void Start () {
+        cam = transform.GetChild(0);
+        // remove visibility of the cursor when testing
         Cursor.visible = false;
+
+        // will began with initial rotation
         yaw = transform.rotation.eulerAngles.y;
         pitch = transform.rotation.eulerAngles.x;
 	}
@@ -27,38 +32,35 @@ public class CameraControl : MonoBehaviour {
         pitch -= mouseSpeed * Input.GetAxis("Mouse Y");
 
         // Moving the camera transform
-        // Moving forward or backward
+        // Moving forward or backward using rigidbody
         if (Input.GetKey(KeyCode.W))
         {
-            //transform.Translate(Vector3.forward * Time.deltaTime * moveSpeed);
             GetComponent<Rigidbody>().AddForce(transform.forward*moveSpeed);
         } else if (Input.GetKey(KeyCode.S))
         {
-            //transform.Translate(Vector3.back * Time.deltaTime * moveSpeed);
             GetComponent<Rigidbody>().AddForce(transform.forward*moveSpeed*-1);
         }
 
-        // Moving left or right
+        // Moving left or right using rigidbody, added roll movement by lerping
         if (Input.GetKey(KeyCode.A))
         {
-            //transform.Translate(Vector3.left * Time.deltaTime * moveSpeed);
             GetComponent<Rigidbody>().AddForce(transform.right*moveSpeed*-1);
             
             roll = Mathf.Lerp(roll, maxRoll, Time.deltaTime * 2);
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            //transform.Translate(Vector3.right * Time.deltaTime * moveSpeed);
             GetComponent<Rigidbody>().AddForce(transform.right*moveSpeed);
 
             roll = Mathf.Lerp(roll, minRoll, Time.deltaTime * 2);
         }
         else
         {
+            // If the user stopped moving left or right
             roll = Mathf.Lerp(roll, 0f, Time.deltaTime * 2);
         }
 
-        // rotating the camera based on the yaw and pitch values
-        transform.eulerAngles = new Vector3(pitch, yaw, roll);
+        // rotating the camera based on the roll, yaw and pitch values
+        cam.eulerAngles = new Vector3(pitch, yaw, roll);
     }
 }
