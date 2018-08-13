@@ -61,6 +61,7 @@ public class CameraControl : MonoBehaviour {
         }
 
         // rotating the camera based on the roll, yaw and pitch values
+        transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
         cam.eulerAngles = new Vector3(pitch, yaw, roll);
     }
 }
