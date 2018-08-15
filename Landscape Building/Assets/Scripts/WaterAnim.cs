@@ -18,6 +18,6 @@ public class WaterAnim : MonoBehaviour
     private void LateUpdate()
     {
         uvOffset += (animRate * Time.deltaTime);
-        renderer.materials[0].SetTextureOffset("_MainTex", uvOffset);
+        renderer.material.SetTextureOffset("_MainTex", uvOffset);
     }
 }
