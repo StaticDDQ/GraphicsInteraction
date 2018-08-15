@@ -9,9 +9,6 @@
 	{
 		Tags {"RenderType"="Opaque" }
 
-		ZWrite Off
-		Blend SrcAlpha OneMinusSrcAlpha
-
 		Pass
 		{
 			CGPROGRAM
@@ -24,26 +21,26 @@
 			{
 				float4 vertex : POSITION;
 				float2 uv : TEXCOORD0;
+
 			};
 
 			struct v2f
 			{
 				float2 uv : TEXCOORD0;
-				UNITY_FOG_COORDS(1)
 				float4 vertex : SV_POSITION;
 			};
 
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
 			float4 _TintColor;
-			
+
 			v2f vert (appdata v)
 			{
 				v2f o;
 				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.vertex.y += sin(worldPos.z + _Time.w)/2 + sin(worldPos.x + _Time.w) / 2;
-				
+				// Manipulate the y coords to move in a wave form for both x and z
+				o.vertex.y += sin(worldPos.z + _Time.w)/2 - cos(worldPos.x + _Time.w)/2;
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				return o;
 			}
