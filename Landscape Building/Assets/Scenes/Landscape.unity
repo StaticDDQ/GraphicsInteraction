@@ -124,6 +124,7 @@ GameObject:
   - component: {fileID: 62265139}
   - component: {fileID: 62265138}
   - component: {fileID: 62265137}
+  - component: {fileID: 62265140}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -185,6 +186,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseSpeed: 3
   moveSpeed: 50
+--- !u!114 &62265140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 62265135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 275eacdc877418449ad294d2164b6c8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 611762612}
 --- !u!1 &611762606
 GameObject:
   m_ObjectHideFlags: 0
