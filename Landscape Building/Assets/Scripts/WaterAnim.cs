@@ -16,30 +16,33 @@ public class WaterAnim : MonoBehaviour
     private void Awake()
     {
         renderer = GetComponent<Renderer>();
+        // Used to generate more vertices which creates smoother wave motion
         GetComponent<MeshFilter>().mesh = CreateMesh();
+        renderer.material.SetTextureScale("_MainTex", tileScale);
     }
 
     private void LateUpdate()
     {
+        // Texture moves continuously
         uvOffset += (moveRate * Time.deltaTime);
         renderer.material.SetTextureOffset("_MainTex", uvOffset);
-        renderer.material.SetTextureScale("_MainTex", tileScale);
     }
 
     private Mesh CreateMesh()
     {
         Mesh water = new Mesh();
 
+        // Assign a list of positions to place the vertices
         List<Vector3> vertices = new List<Vector3>();
-        List<Vector3> normals = new List<Vector3>();
         List<Vector3> uvs = new List<Vector3>();
 
         for (int x = 0; x < gridSize + 1; x++)
         {
             for (int y = 0; y < gridSize + 1; y++)
             {
+                // Equally distribute the amount of vertices by the given grid
                 vertices.Add(new Vector3(-size * 0.5f + size * (x / (float)gridSize), 0, -size * 0.5f + size * (y / (float)gridSize)));
-                normals.Add(Vector3.up);
+                // Add UV for each vertices
                 uvs.Add(new Vector2(x / (float)gridSize, y / (float)gridSize));
             }
         }
@@ -47,23 +50,29 @@ public class WaterAnim : MonoBehaviour
         List<int> triangles = new List<int>();
         var vertCount = gridSize + 1;
 
-        for (int i = 0; i < vertCount * vertCount - vertCount; i++)
+        for (int i = 0; i < vertCount * vertCount- vertCount; i++)
         {
-            if((i+1) % vertCount == 0)
+            // Skip if it is the last vertices, therefore it doesn't have another vertice to form
+            // a triangle, prevents out of bound error
+            if ((i + 1) % vertCount == 0)
             {
                 continue;
             }
-            triangles.AddRange(new List<int>()
-            {
-                i+1+vertCount, i+vertCount, i,
-                i, i+1, i+vertCount+1
-            });
+            
+            // Defines the triangles by clockwise implementation
+            triangles.Add(i);
+            triangles.Add(i + 1);
+            triangles.Add(i + vertCount + 1);
+          
+            triangles.Add(i);
+            triangles.Add(i + vertCount + 1);
+            triangles.Add(i + vertCount);
         }
 
-        water.SetVertices(vertices);
-        //water.SetNormals(normals);
-        water.SetUVs(0,uvs);
-        water.SetTriangles(triangles, 0);
+        // Set all data to map the mesh as a plane
+        water.vertices = vertices.ToArray();
+        water.triangles = triangles.ToArray();
+        water.SetUVs(0, uvs);
 
         return water;
     }

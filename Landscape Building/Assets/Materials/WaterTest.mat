@@ -27,7 +27,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
-        m_Texture: {fileID: 2800000, guid: f878a9839dba03a42a58db2bdefb8f90, type: 3}
+        m_Texture: {fileID: 2800000, guid: b92f3ccdb39dc18408808457695c5f6a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
@@ -42,6 +42,9 @@ Material:
     - _Metallic: 0
     - _NoiseFrequency: 1
     - _NoiseScale: 1
+    - _Smooth: 4
+    - _Smooth1: 1
+    - _Smooth2: 1
     - _Speed: 1
     - _Tess: 4
     - _Transparency: 0.5
