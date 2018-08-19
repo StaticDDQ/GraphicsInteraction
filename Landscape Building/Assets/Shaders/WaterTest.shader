@@ -2,8 +2,10 @@
 {
 	Properties
 	{
-		_MainTex ("Texture", 2D) = "white" {}
+		_MainTex("Texture", 2D) = "white" {}
+		_NoiseTex("Noise Texture", 2D) = "white" {}
 		_TintColor("Tint Color", Color) = (1,1,1,1)
+		_Smooth("Smoothening", float) = 1
 	}
 	SubShader
 	{
@@ -31,16 +33,21 @@
 			};
 
 			sampler2D _MainTex;
+			sampler2D _NoiseTex;
 			float4 _MainTex_ST;
 			float4 _TintColor;
+			float _Smooth;
 
 			v2f vert (appdata v)
 			{
 				v2f o;
 				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+
+				float noise = tex2Dlod(_NoiseTex, float4(v.uv,0,_Smooth));
+
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				// Manipulate the y coords to move in a wave form for both x and z
-				o.vertex.y += sin(worldPos.z + _Time.w)/2 - cos(worldPos.x + _Time.w)/2;
+				o.vertex.y += sin(worldPos.z+(_Time.w*noise))/2 - cos(worldPos.x+(_Time.w*noise))/2;
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				return o;
 			}
