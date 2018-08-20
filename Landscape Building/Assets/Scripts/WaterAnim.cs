@@ -5,7 +5,7 @@ using UnityEngine;
 public class WaterAnim : MonoBehaviour
 {
     private Vector2 uvOffset = Vector2.zero;
-    private new Renderer renderer;
+    private new MeshRenderer renderer;
 
     public Vector2 tileScale =  new Vector2(1,1);
     public Vector2 moveRate = new Vector2(1.0f, 0.0f);
@@ -15,9 +15,9 @@ public class WaterAnim : MonoBehaviour
 
     private void Awake()
     {
-        renderer = GetComponent<Renderer>();
+        renderer = GetComponent<MeshRenderer>();
         // Used to generate more vertices which creates smoother wave motion
-        GetComponent<MeshFilter>().mesh = CreateMesh();
+        InitMesh();
         renderer.material.SetTextureScale("_MainTex", tileScale);
     }
 
@@ -26,6 +26,12 @@ public class WaterAnim : MonoBehaviour
         // Texture moves continuously
         uvOffset += (moveRate * Time.deltaTime);
         renderer.material.SetTextureOffset("_MainTex", uvOffset);
+    }
+
+    [ContextMenu("Create Mesh")]
+    public void InitMesh()
+    {
+        GetComponent<MeshFilter>().mesh = CreateMesh();
     }
 
     private Mesh CreateMesh()
@@ -50,6 +56,7 @@ public class WaterAnim : MonoBehaviour
         List<int> triangles = new List<int>();
         var vertCount = gridSize + 1;
 
+        // Go through all vertices except the last line
         for (int i = 0; i < vertCount * vertCount- vertCount; i++)
         {
             // Skip if it is the last vertices, therefore it doesn't have another vertice to form

@@ -157,6 +157,16 @@ Prefab:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 8281ce8f5c8bf9c46adcb8e8469f4155, type: 2}
+    - target: {fileID: 114557395224953426, guid: b415d2b92040a794db9602a7fdfde8b7,
+        type: 2}
+      propertyPath: gridSize
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557395224953426, guid: b415d2b92040a794db9602a7fdfde8b7,
+        type: 2}
+      propertyPath: size
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b415d2b92040a794db9602a7fdfde8b7, type: 2}
   m_IsPrefabParent: 0
@@ -197,6 +207,42 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4121648236141624, guid: 57017c58afa1cfc4fa998509aa0193a5, type: 2}
       propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795274491080438, guid: 57017c58afa1cfc4fa998509aa0193a5, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795274491080438, guid: 57017c58afa1cfc4fa998509aa0193a5, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795274491080438, guid: 57017c58afa1cfc4fa998509aa0193a5, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795274491080438, guid: 57017c58afa1cfc4fa998509aa0193a5, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795274491080438, guid: 57017c58afa1cfc4fa998509aa0193a5, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795274491080438, guid: 57017c58afa1cfc4fa998509aa0193a5, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795274491080438, guid: 57017c58afa1cfc4fa998509aa0193a5, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795274491080438, guid: 57017c58afa1cfc4fa998509aa0193a5, type: 2}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795274491080438, guid: 57017c58afa1cfc4fa998509aa0193a5, type: 2}
+      propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
