@@ -18,7 +18,7 @@ public class WaterAnim : MonoBehaviour
         renderer = GetComponent<MeshRenderer>();
         // Used to generate more vertices which creates smoother wave motion
         InitMesh();
-        renderer.material.SetTextureScale("_MainTex", tileScale);
+        
     }
 
     private void LateUpdate()
@@ -26,6 +26,7 @@ public class WaterAnim : MonoBehaviour
         // Texture moves continuously
         uvOffset += (moveRate * Time.deltaTime);
         renderer.material.SetTextureOffset("_MainTex", uvOffset);
+        renderer.material.SetTextureScale("_MainTex", tileScale);
     }
 
     [ContextMenu("Create Mesh")]

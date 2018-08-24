@@ -1,15 +1,19 @@
-﻿Shader "Unlit/WaterTest"
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Custom/Water"
 {
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
-		_NoiseTex("Noise Texture", 2D) = "white" {}
 		_TintColor("Tint Color", Color) = (1,1,1,1)
-		_Smooth("Smoothening", float) = 1
+		_Transparency("Transparency", Range(0.0,0.8)) = 0.25
+		_WaveAmp("Wave Amplitude", float) = 1
 	}
 	SubShader
 	{
-		Tags {"RenderType"="Opaque" }
+		Tags{ "Queue" = "Transparent"}
+
+		Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass
 		{
@@ -19,44 +23,43 @@
 			
 			#include "UnityCG.cginc"
 
-			struct appdata
+			struct vertexIn
 			{
 				float4 vertex : POSITION;
 				float2 uv : TEXCOORD0;
-
 			};
 
-			struct v2f
+			struct vertexOut
 			{
 				float2 uv : TEXCOORD0;
 				float4 vertex : SV_POSITION;
 			};
 
 			sampler2D _MainTex;
-			sampler2D _NoiseTex;
 			float4 _MainTex_ST;
 			float4 _TintColor;
-			float _Smooth;
+			float _Transparency;
+			float _WaveAmp;
 
-			v2f vert (appdata v)
+			vertexOut vert (vertexIn v)
 			{
-				v2f o;
+				vertexOut o;
 				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-
-				float noise = tex2Dlod(_NoiseTex, float4(v.uv,0,_Smooth));
 
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				// Manipulate the y coords to move in a wave form for both x and z
-				o.vertex.y += sin(worldPos.z+(_Time.w*noise))/2 - cos(worldPos.x+(_Time.w*noise))/2;
+				o.vertex.y += (sin(worldPos.z+_Time.y) + cos(worldPos.x+_Time.y)) * _WaveAmp;
+				// texture scale and offset are applied correctly to the uv
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				return o;
 			}
-			
-			fixed4 frag (v2f i) : SV_Target
+
+			fixed4 frag (vertexOut i) : SV_Target
 			{
 				// sample the texture
 				fixed4 col = tex2D(_MainTex, i.uv) + _TintColor;
-
+				// Add abit of transparency of the material
+				col.a = _Transparency;
 				return col;
 			}
 

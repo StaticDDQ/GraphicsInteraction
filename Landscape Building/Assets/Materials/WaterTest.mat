@@ -18,41 +18,81 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CameraDepthTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _DepthRampTex:
         m_Texture: {fileID: 2800000, guid: f878a9839dba03a42a58db2bdefb8f90, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Foam:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamGradient:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Fresnel:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: f878a9839dba03a42a58db2bdefb8f90, type: 3}
+        m_Texture: {fileID: 2800000, guid: 3b877b0ca98a8e14493d06d65a922b7a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ReflectionTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ReflectiveColor:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RefractionTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Amount: 1
+    - _Amp: 0.89
     - _Amplitude: 1
-    - _CutoutThresh: 0.242
+    - _CutoutThresh: 0
     - _DepthFactor: 1
     - _Distance: 1
     - _DistortStrength: 1
     - _ExtraHeight: 0
+    - _FoamStrength: 1
     - _Glossiness: 0.5
     - _Metallic: 0
     - _NoiseFrequency: 1
     - _NoiseScale: 1
+    - _ReflDistort: 0.44
+    - _RefrDistort: 0.4
     - _Smooth: 5
     - _Smooth1: 1
     - _Smooth2: 1
     - _Speed: 1
     - _Tess: 4
-    - _Transparency: 0.5
-    - _WaveAmp: 1
+    - _Transparency: 0.6
+    - _WaveAmp: 0.64
     - _WaveAmplitude: 1
+    - _WaveScale: 0.063
     - _WaveSpeed: 1
     m_Colors:
+    - WaveSpeed: {r: 19, g: 9, b: -16, a: -7}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EdgeColor: {r: 1, g: 1, b: 1, a: 1}
+    - _HorizonColor: {r: 0.172, g: 0.463, b: 0.435, a: 1}
     - _NoiseOffset: {r: 0, g: 0, b: 0, a: 0}
-    - _TintColor: {r: 0, g: 0, b: 0, a: 0}
+    - _RefrColor: {r: 0.34, g: 0.85, b: 0.92, a: 1}
+    - _TintColor: {r: 0, g: 0, b: 0, a: 1}
