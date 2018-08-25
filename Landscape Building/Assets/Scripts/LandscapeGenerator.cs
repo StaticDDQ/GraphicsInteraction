@@ -22,14 +22,12 @@ public class LandscapeGenerator : MonoBehaviour
 
         MeshRenderer renderer = this.gameObject.AddComponent<MeshRenderer>();
         renderer.material.shader = Shader.Find("Custom/LandscapeShader");
+
+        MeshCollider collider = this.gameObject.AddComponent<MeshCollider>();
+        GetComponent<MeshCollider>().sharedMesh = landscapeMesh.mesh;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
+    [ContextMenu("Create Landscape Mesh")]
     Mesh CreateLandscapeMesh()
     {
         Mesh m = new Mesh();
