@@ -27,7 +27,6 @@ public class LandscapeGenerator : MonoBehaviour
         GetComponent<MeshCollider>().sharedMesh = landscapeMesh.mesh;
     }
 
-    [ContextMenu("Create Landscape Mesh")]
     Mesh CreateLandscapeMesh()
     {
         Mesh m = new Mesh();
