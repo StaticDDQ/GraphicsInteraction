@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,12 +8,10 @@ public class LandscapeGenerator : MonoBehaviour
     public int iterations = 6;
     public float heightLimit = 50;
     public float smoothness = 0.5f;
-    private System.Random rng;
 
     // Use this for initialization
     void Start()
     {
-        rng = new System.Random();
 
         MeshFilter landscapeMesh = this.gameObject.AddComponent<MeshFilter>();
         landscapeMesh.mesh = this.CreateLandscapeMesh();
@@ -24,7 +20,7 @@ public class LandscapeGenerator : MonoBehaviour
         renderer.material.shader = Shader.Find("Custom/LandscapeShader");
 
         MeshCollider collider = this.gameObject.AddComponent<MeshCollider>();
-        GetComponent<MeshCollider>().sharedMesh = landscapeMesh.mesh;
+        collider.sharedMesh = landscapeMesh.mesh;
     }
 
     Mesh CreateLandscapeMesh()
@@ -69,11 +65,13 @@ public class LandscapeGenerator : MonoBehaviour
         return m;
     }
 
+
     // Takes the initialized height map as input, returns the height map after running diamond-square algorithm
     float[,] DiamondSquareGenerator(float[,] heightMap)
     {
         // Decrease iteration scale (step) by factor of 2 per iteration
         int size = heightMap.GetLength(0);
+        
         for (int step = (size - 1) / 2; step >= 1; step /= 2)
         {
             // Diamond Step
@@ -100,7 +98,7 @@ public class LandscapeGenerator : MonoBehaviour
                     catch // If code yields error from out of range index, must be border coordinate, move to catch
                     {
                         // Pushes coordinates back into target coordinate, initialized to 0 so doesn't affect average
-                        heightMap[i, j] = (heightMap[i, Math.Max(0, j - step)] + heightMap[i, Math.Min(size - 1, j + step)] + heightMap[Math.Max(0, i - step), j] + heightMap[Math.Min(size - 1, i + 1), j]) / 3;
+                        heightMap[i, j] = (heightMap[i, Mathf.Max(0, j - step)] + heightMap[i, Mathf.Min(size - 1, j + step)] + heightMap[Mathf.Max(0, i - step), j] + heightMap[Mathf.Min(size - 1, i + step), j]) / 3;
                     }
                     heightMap[i, j] += calcWeightedOffset(step, size);
                 }
@@ -114,7 +112,7 @@ public class LandscapeGenerator : MonoBehaviour
     float[,] CreateHeightMap(int iter)
     {
         // Create height map of size 2^#ofiterations + 1
-        int size = (int)Math.Pow(2, iter) + 1;
+        int size = (int)Mathf.Pow(2, iter) + 1;
         float[,] heightMap = new float[size, size];
 
         // Initialize corners with random heights within bounds
@@ -137,7 +135,7 @@ public class LandscapeGenerator : MonoBehaviour
         //FIX THIS, COLOR LIST CURRENTLY UPDATED HERE THROUGH PARAM REFERENCE
         //float a = (y + heightLimit) / (heightLimit * 2f);
         //list.Add(new Color(Math.Max(0, Math.Min(1, 4 * a - 2)), Math.Max(0, 1 - Math.Abs(4 * a - 2)), Math.Max(0, Math.Min(1, 2 - 4 * a))));
-        float a = Math.Max(0, Math.Min(1, 2 * ((y + heightLimit) / (heightLimit * 2f)) - 0.5f));
+        float a = Mathf.Max(0, Mathf.Min(1, 2 * ((y + heightLimit) / (heightLimit * 2f)) - 0.5f));
         list.Add(new Color(a, a, a));
 
         return new Vector3(x, y, z);
@@ -153,8 +151,8 @@ public class LandscapeGenerator : MonoBehaviour
         // MOVE THIS TO README.MD
         // 0 < smoothness < 0.5 : starting weight is constant at 1, y-intercept decreases, gradient steepens
         // 0.5 < smoothness < 1 : starting weight decreases, y-intercept is constant at 0, gradient flattens
-        float gradient = 1 - Math.Abs(1 - 2 * smoothness);
-        float intercept = Math.Max(0, 1 - 2 * smoothness);
+        float gradient = 1 - Mathf.Abs(1 - 2 * smoothness);
+        float intercept = Mathf.Max(0, 1 - 2 * smoothness);
         float realWeight = gradient * baseWeight + intercept;
 
         // Apply weight to random offset
@@ -164,6 +162,6 @@ public class LandscapeGenerator : MonoBehaviour
     // Calculate height offset within height bounds
     float calcRandOffset()
     {
-        return (float)(heightLimit * rng.NextDouble() - heightLimit / 2);
+        return heightLimit * Random.value - heightLimit*0.5f;
     }
 }
