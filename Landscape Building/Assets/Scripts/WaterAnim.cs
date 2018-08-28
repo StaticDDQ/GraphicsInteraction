@@ -25,8 +25,8 @@ public class WaterAnim : MonoBehaviour
     {
         // Texture moves continuously
         uvOffset += (moveRate * Time.deltaTime);
-        renderer.material.SetTextureOffset("_MainTex", uvOffset);
-        renderer.material.SetTextureScale("_MainTex", tileScale);
+        renderer.sharedMaterial.SetTextureOffset("_MainTex", uvOffset);
+        renderer.sharedMaterial.SetTextureScale("_MainTex", tileScale);
     }
 
     [ContextMenu("Create Mesh")]

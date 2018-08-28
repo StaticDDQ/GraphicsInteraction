@@ -12,15 +12,11 @@ public class LandscapeGenerator : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        GetComponent<MeshFilter>().sharedMesh = this.CreateLandscapeMesh();
 
-        MeshFilter landscapeMesh = this.gameObject.AddComponent<MeshFilter>();
-        landscapeMesh.mesh = this.CreateLandscapeMesh();
+        GetComponent<MeshRenderer>().sharedMaterial.shader = Shader.Find("Custom/LandscapeShader");
 
-        MeshRenderer renderer = this.gameObject.AddComponent<MeshRenderer>();
-        renderer.material.shader = Shader.Find("Custom/LandscapeShader");
-
-        MeshCollider collider = this.gameObject.AddComponent<MeshCollider>();
-        collider.sharedMesh = landscapeMesh.mesh;
+        GetComponent<MeshCollider>().sharedMesh = GetComponent<MeshFilter>().sharedMesh;
     }
 
     Mesh CreateLandscapeMesh()
@@ -65,8 +61,29 @@ public class LandscapeGenerator : MonoBehaviour
         return m;
     }
 
+    // Takes the height map and coordinates as input, outputs a vector corresponding with coordinates' height
+    // FIX COLOR
+    Vector3 CreateVectorFromMap(int i, int j, float[,] map, List<Color> list)
+    {
+        float x = (-size / 2) + (i * (size / (map.GetLength(0) - 1)));
+        float y = map[i, j];
+        float z = (-size / 2) + (j * (size / (map.GetLength(0) - 1)));
 
-    // Takes the initialized height map as input, returns the height map after running diamond-square algorithm
+        //FIX THIS, COLOR LIST CURRENTLY UPDATED HERE THROUGH PARAM REFERENCE
+        //float a = (y + heightLimit) / (heightLimit * 2f);
+        //list.Add(new Color(Math.Max(0, Math.Min(1, 4 * a - 2)), Math.Max(0, 1 - Math.Abs(4 * a - 2)), Math.Max(0, Math.Min(1, 2 - 4 * a))));
+        float a = Mathf.Max(0, Mathf.Min(1, 2 * ((y + heightLimit) / (heightLimit * 2f)) - 0.5f));
+        list.Add(new Color(a, a, a));
+
+        return new Vector3(x, y, z);
+    }
+
+    #region DiamondSquare
+    /// <summary>
+    /// Populate the heightmap using the Diamond Square Algorithm
+    /// </summary>
+    /// <param name="heightMap"></param>
+    /// <returns> Generated heightmap </returns>
     float[,] DiamondSquareGenerator(float[,] heightMap)
     {
         // Decrease iteration scale (step) by factor of 2 per iteration
@@ -104,11 +121,17 @@ public class LandscapeGenerator : MonoBehaviour
                 }
             }
         }
-
         return heightMap;
     }
+    #endregion
 
-    // Takes # of iterations as input and outputs a height map of required size with corners initialized
+    #region CreateHeightMap
+    /// <summary>
+    /// Initialize the heightmap by setting the number of equally divided points
+    /// and setting the corner values with random amount
+    /// </summary>
+    /// <param name="iter"> Iteration to determine the grid size </param>
+    /// <returns> Initilized heatmap </returns>
     float[,] CreateHeightMap(int iter)
     {
         // Create height map of size 2^#ofiterations + 1
@@ -116,30 +139,14 @@ public class LandscapeGenerator : MonoBehaviour
         float[,] heightMap = new float[size, size];
 
         // Initialize corners with random heights within bounds
-        heightMap[0, 0] = calcRandOffset();
-        heightMap[0, size - 1] = calcRandOffset();
-        heightMap[size - 1, 0] = calcRandOffset();
-        heightMap[size - 1, size - 1] = calcRandOffset();
+        heightMap[0, 0] = Random.Range(-heightLimit*0.2f,heightLimit*0.25f);
+        heightMap[0, size - 1] = Random.Range(-heightLimit * 0.2f, heightLimit * 0.25f);
+        heightMap[size - 1, 0] = Random.Range(-heightLimit * 0.2f, heightLimit * 0.25f);
+        heightMap[size - 1, size - 1] = Random.Range(-heightLimit * 0.2f, heightLimit * 0.25f);
 
         return heightMap;
     }
-    
-    // Takes the height map and coordinates as input, outputs a vector corresponding with coordinates' height
-    // FIX COLOR
-    Vector3 CreateVectorFromMap(int i, int j, float[,] map, List<Color> list)
-    {
-        float x = (-size / 2) + (i * (size / (map.GetLength(0) - 1)));
-        float y = map[i, j];
-        float z = (-size / 2) + (j * (size / (map.GetLength(0) - 1)));
-
-        //FIX THIS, COLOR LIST CURRENTLY UPDATED HERE THROUGH PARAM REFERENCE
-        //float a = (y + heightLimit) / (heightLimit * 2f);
-        //list.Add(new Color(Math.Max(0, Math.Min(1, 4 * a - 2)), Math.Max(0, 1 - Math.Abs(4 * a - 2)), Math.Max(0, Math.Min(1, 2 - 4 * a))));
-        float a = Mathf.Max(0, Mathf.Min(1, 2 * ((y + heightLimit) / (heightLimit * 2f)) - 0.5f));
-        list.Add(new Color(a, a, a));
-
-        return new Vector3(x, y, z);
-    }
+    #endregion
 
     // Takes the height map size and the current iteration scale, outputs a weighted random offset for the height
     float calcWeightedOffset(int step, int size)
@@ -162,6 +169,6 @@ public class LandscapeGenerator : MonoBehaviour
     // Calculate height offset within height bounds
     float calcRandOffset()
     {
-        return heightLimit * Random.value - heightLimit*0.5f;
+        return heightLimit * Random.value - heightLimit * 0.5f;
     }
 }
