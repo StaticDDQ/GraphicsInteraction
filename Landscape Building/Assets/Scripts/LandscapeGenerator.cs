@@ -9,14 +9,30 @@ public class LandscapeGenerator : MonoBehaviour
     public float heightLimit = 50;
     public float smoothness = 0.5f;
 
+    public Shader shader;
+    public PointLight pointLight;
+
+    public float speed = 100.0f;
+
     // Use this for initialization
     void Start()
     {
         GetComponent<MeshFilter>().sharedMesh = this.CreateLandscapeMesh();
 
-        GetComponent<MeshRenderer>().sharedMaterial.shader = Shader.Find("Custom/LandscapeShader");
+        GetComponent<MeshRenderer>().sharedMaterial.shader = shader;
 
         GetComponent<MeshCollider>().sharedMesh = GetComponent<MeshFilter>().sharedMesh;
+    }
+
+    // Called each frame
+    void Update()
+    {
+        // Get renderer component (in order to pass params to shader)
+        MeshRenderer renderer = this.gameObject.GetComponent<MeshRenderer>();
+
+        // Pass updated light positions to shader
+        renderer.material.SetColor("_PointLightColor", this.pointLight.color);
+        renderer.material.SetVector("_PointLightPosition", this.pointLight.GetWorldPosition());
     }
 
     Mesh CreateLandscapeMesh()
@@ -32,6 +48,7 @@ public class LandscapeGenerator : MonoBehaviour
         int size = heightMap.GetLength(0);
         List<Vector3> vectorList = new List<Vector3>();
         List<Color> colorList = new List<Color>();
+        List<Vector3> normalList = new List<Vector3>();
 
         // Draw 2 triangles (6 vectors) for every pair of 4 heights in a square
         for (int i = 0; i < size - 1; i++)
@@ -50,6 +67,20 @@ public class LandscapeGenerator : MonoBehaviour
 
         m.vertices = vectorList.ToArray();
         m.colors = colorList.ToArray();
+
+        for (int i = 0; i < m.vertices.Length; i += 3)
+        {
+            Vector3 side1 = vectorList[i + 1] - vectorList[i];
+            Vector3 side2 = vectorList[i + 2] - vectorList[i];
+
+            Vector3 n = Vector3.Cross(side1, side2);
+            Vector3 nn = n / n.magnitude;
+            normalList.Add(nn);
+            normalList.Add(nn);
+            normalList.Add(nn);
+        }
+
+        m.normals = normalList.ToArray();
 
         int[] triangles = new int[m.vertices.Length];
         for (int i = 0; i < m.vertices.Length; i++)
