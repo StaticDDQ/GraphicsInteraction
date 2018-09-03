@@ -32,8 +32,8 @@ public class LandscapeGenerator : MonoBehaviour
         MeshRenderer renderer = this.gameObject.GetComponent<MeshRenderer>();
 
         // Pass updated light positions to shader
-        renderer.material.SetColor("_PointLightColor", this.pointLight.color);
-        renderer.material.SetVector("_PointLightPosition", this.pointLight.GetWorldPosition());
+        renderer.sharedMaterial.SetColor("_PointLightColor", this.pointLight.color);
+        renderer.sharedMaterial.SetVector("_PointLightPosition", this.pointLight.GetWorldPosition());
     }
 
     Mesh CreateLandscapeMesh()
@@ -103,21 +103,21 @@ public class LandscapeGenerator : MonoBehaviour
 
         //FIX THIS, COLOR LIST CURRENTLY UPDATED HERE THROUGH PARAM REFERENCE
         //float a = (y + heightLimit) / (heightLimit * 2f);
-        //list.Add(new Color(Math.Max(0, Math.Min(1, 4 * a - 2)), Math.Max(0, 1 - Math.Abs(4 * a - 2)), Math.Max(0, Math.Min(1, 2 - 4 * a))));
+        //list.Add(new Color(Mathf.Max(0, Mathf.Min(1, 4 * a - 2)), Mathf.Max(0, 1 - Mathf.Abs(4 * a - 2)), Mathf.Max(0, Mathf.Min(1, 2 - 4 * a))));
         //float a = Mathf.Max(0, Mathf.Min(1, 2 * ((y + heightLimit) / (heightLimit * 2f)) - 0.5f));
         //list.Add(new Color(255, 238, 204));
 
-        if (y < heightLimit/4)
+        if (y < heightLimit*0.05)
         {
-            list.Add(new Color(255, 238, 204));
+            list.Add(Random.ColorHSV(0.11f, 0.14f, 0.5f, 0.6f, 0.7f, 0.8f));
         }
         else if (y < heightLimit*3/4)
         {
-            list.Add(new Color(45, 134, 45));
+            list.Add(Random.ColorHSV(0.3f, 0.36f, 0.5f, 0.6f, 0.3f, 0.4f));
         }
         else
         {
-            list.Add(new Color(230, 255, 255));
+            list.Add(Random.ColorHSV(0.5f, 0.53f, 0.5f, 0.7f, 0.8f, 1f));
         }
 
         return new Vector3(x, y, z);
