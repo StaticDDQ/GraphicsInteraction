@@ -6,6 +6,7 @@
 		_PointLightPosition("Point Light Position", Vector) = (0.0, 0.0, 0.0)
 		_fAtt("Attenuation", float) = 1
 		_Ka("Ka", float) = 1
+		_Ks("Ks", float) = 1
 		_Shine("Shinyness", float) = 1
 	}
 	SubShader
@@ -22,6 +23,7 @@
 			uniform float3 _PointLightPosition;
 			uniform float _fAtt;
 			uniform float _Ka;
+			uniform float _Ks;
 			uniform float _Shine;
 
 			struct vertIn
@@ -74,7 +76,7 @@
 					specular = float3(0, 0, 0);
 				}
 				else {
-					specular = _fAtt * _PointLightColor.rgb * pow(max(0.0, dot(R, L)), _Shine);
+					specular = _fAtt * _PointLightColor.rgb * _Ks * pow(max(0.0, dot(R, L)), _Shine);
 				}
 
 				fixed3 col = amb + diff + specular;

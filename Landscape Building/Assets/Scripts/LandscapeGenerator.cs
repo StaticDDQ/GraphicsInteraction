@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class LandscapeGenerator : MonoBehaviour
 {
     public float size = 50;
@@ -10,30 +9,11 @@ public class LandscapeGenerator : MonoBehaviour
     public float heightLimit = 50;
     public float smoothness = 0.5f;
 
-    public Shader shader;
-    public PointLight pointLight;
-
-    public float speed = 100.0f;
-
     // Use this for initialization
     void Start()
     {
         GetComponent<MeshFilter>().sharedMesh = this.CreateLandscapeMesh();
-
-        GetComponent<MeshRenderer>().sharedMaterial.shader = shader;
-
         GetComponent<MeshCollider>().sharedMesh = GetComponent<MeshFilter>().sharedMesh;
-    }
-
-    // Called each frame
-    void Update()
-    {
-        // Get renderer component (in order to pass params to shader)
-        MeshRenderer renderer = this.gameObject.GetComponent<MeshRenderer>();
-
-        // Pass updated light positions to shader
-        renderer.sharedMaterial.SetColor("_PointLightColor", this.pointLight.color);
-        renderer.sharedMaterial.SetVector("_PointLightPosition", this.pointLight.GetWorldPosition());
     }
 
     Mesh CreateLandscapeMesh()
@@ -94,18 +74,11 @@ public class LandscapeGenerator : MonoBehaviour
     }
 
     // Takes the height map and coordinates as input, outputs a vector corresponding with coordinates' height
-    // FIX COLOR
     Vector3 CreateVectorFromMap(int i, int j, float[,] map, List<Color> list)
     {
         float x = (-size / 2) + (i * (size / (map.GetLength(0) - 1)));
         float y = map[i, j];
         float z = (-size / 2) + (j * (size / (map.GetLength(0) - 1)));
-
-        //FIX THIS, COLOR LIST CURRENTLY UPDATED HERE THROUGH PARAM REFERENCE
-        //float a = (y + heightLimit) / (heightLimit * 2f);
-        //list.Add(new Color(Mathf.Max(0, Mathf.Min(1, 4 * a - 2)), Mathf.Max(0, 1 - Mathf.Abs(4 * a - 2)), Mathf.Max(0, Mathf.Min(1, 2 - 4 * a))));
-        //float a = Mathf.Max(0, Mathf.Min(1, 2 * ((y + heightLimit) / (heightLimit * 2f)) - 0.5f));
-        //list.Add(new Color(255, 238, 204));
 
         if (y < heightLimit*0.05)
         {

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -154,6 +154,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   color: {r: 1, g: 1, b: 1, a: 0}
+--- !u!21 &108352521
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Standard (Instance)
+  m_Shader: {fileID: 4800000, guid: 6b92ae48ea77f9140909a1492fa38211, type: 3}
+  m_ShaderKeywords: _GLOSSYREFLECTIONS_OFF
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats:
+    - _Ka: 1
+    - _Ks: 0.3
+    - _Shine: 20
+    - _fAtt: 1
+    m_Colors:
+    - _PointLightColor: {r: 0, g: 0, b: 0, a: 1}
+    - _PointLightPosition: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1001 &663533040
 Prefab:
   m_ObjectHideFlags: 0
@@ -197,6 +223,16 @@ Prefab:
         type: 2}
       propertyPath: gridSize
       value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 114228461188159194, guid: b415d2b92040a794db9602a7fdfde8b7,
+        type: 2}
+      propertyPath: size
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 33115836447589780, guid: b415d2b92040a794db9602a7fdfde8b7,
+        type: 2}
+      propertyPath: m_Mesh
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b415d2b92040a794db9602a7fdfde8b7, type: 2}
@@ -252,6 +288,7 @@ GameObject:
   m_Component:
   - component: {fileID: 976548307}
   - component: {fileID: 976548306}
+  - component: {fileID: 976548311}
   - component: {fileID: 976548310}
   - component: {fileID: 976548309}
   - component: {fileID: 976548308}
@@ -276,10 +313,7 @@ MonoBehaviour:
   size: 50
   iterations: 5
   heightLimit: 30
-  smoothness: 0.6
-  shader: {fileID: 4800000, guid: 6b92ae48ea77f9140909a1492fa38211, type: 3}
-  pointLight: {fileID: 17690043}
-  speed: 100
+  smoothness: 0.5
 --- !u!4 &976548307
 Transform:
   m_ObjectHideFlags: 0
@@ -322,7 +356,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: e01416f81dd3ed1499961af5092ca8cb, type: 2}
+  - {fileID: 108352521}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -349,6 +383,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 976548305}
   m_Mesh: {fileID: 0}
+--- !u!114 &976548311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 976548305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c570a91e6368964aa32f3f1ec26a8c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointLight: {fileID: 17690043}
 --- !u!1 &1255159196
 GameObject:
   m_ObjectHideFlags: 0
@@ -9747,7 +9793,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1947096327}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: -40}
+  m_LocalPosition: {x: 0, y: -0, z: -40}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 17690042}
