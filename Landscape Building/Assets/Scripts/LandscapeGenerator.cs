@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class LandscapeGenerator : MonoBehaviour
 {
     public float size = 50;
@@ -103,8 +104,21 @@ public class LandscapeGenerator : MonoBehaviour
         //FIX THIS, COLOR LIST CURRENTLY UPDATED HERE THROUGH PARAM REFERENCE
         //float a = (y + heightLimit) / (heightLimit * 2f);
         //list.Add(new Color(Math.Max(0, Math.Min(1, 4 * a - 2)), Math.Max(0, 1 - Math.Abs(4 * a - 2)), Math.Max(0, Math.Min(1, 2 - 4 * a))));
-        float a = Mathf.Max(0, Mathf.Min(1, 2 * ((y + heightLimit) / (heightLimit * 2f)) - 0.5f));
-        list.Add(new Color(a, a, a));
+        //float a = Mathf.Max(0, Mathf.Min(1, 2 * ((y + heightLimit) / (heightLimit * 2f)) - 0.5f));
+        //list.Add(new Color(255, 238, 204));
+
+        if (y < heightLimit/4)
+        {
+            list.Add(new Color(255, 238, 204));
+        }
+        else if (y < heightLimit*3/4)
+        {
+            list.Add(new Color(45, 134, 45));
+        }
+        else
+        {
+            list.Add(new Color(230, 255, 255));
+        }
 
         return new Vector3(x, y, z);
     }
