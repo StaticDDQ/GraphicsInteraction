@@ -98,7 +98,7 @@ Shader "Custom/Water"
 					specular = _fAtt * _PointLightColor.rgb * _Ks * pow(max(0.0, dot(R, L)), _Shine);
 				}
 
-				fixed3 col = 0.5 * (amb + diff + specular) + 0.5 * (tex2D(_MainTex, v.uv));
+				fixed3 col = (amb + diff) * tex2D(_MainTex, v.uv) + specular;
 
 				return fixed4(col,_Transparency);
 			}

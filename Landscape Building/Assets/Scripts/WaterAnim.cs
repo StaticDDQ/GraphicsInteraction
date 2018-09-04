@@ -41,6 +41,7 @@ public class WaterAnim : MonoBehaviour
 
         // Assign a list of positions to place the vertices
         List<Vector3> vertices = new List<Vector3>();
+        List<Vector3> normals = new List<Vector3>();
         List<Vector3> uvs = new List<Vector3>();
 
         for (int x = 0; x < gridSize + 1; x++)
@@ -49,6 +50,8 @@ public class WaterAnim : MonoBehaviour
             {
                 // Equally distribute the amount of vertices by the given grid
                 vertices.Add(new Vector3(-size * 0.5f + size * (x / (float)gridSize), 0, -size * 0.5f + size * (y / (float)gridSize)));
+                // Set normals for each vertices
+                normals.Add(Vector3.up);
                 // Add UV for each vertices
                 uvs.Add(new Vector2(x / (float)gridSize, y / (float)gridSize));
             }
@@ -78,9 +81,11 @@ public class WaterAnim : MonoBehaviour
         }
 
         // Set all data to map the mesh as a plane
-        water.vertices = vertices.ToArray();
-        water.triangles = triangles.ToArray();
+        water.SetVertices(vertices);
+        water.SetNormals(normals);
         water.SetUVs(0, uvs);
+
+        water.triangles = triangles.ToArray();
 
         return water;
     }
