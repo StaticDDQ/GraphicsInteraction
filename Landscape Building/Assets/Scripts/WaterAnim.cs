@@ -17,6 +17,7 @@ public class WaterAnim : MonoBehaviour
     {
         renderer = GetComponent<MeshRenderer>();
         // Used to generate more vertices which creates smoother wave motion
+        GetComponent<BoxCollider>().size = new Vector3(size, 1, size);
         InitMesh();
         
     }
