@@ -174,8 +174,8 @@ Material:
     m_TexEnvs: []
     m_Floats:
     - _Ka: 1
-    - _Ks: 0.3
-    - _Shine: 20
+    - _Ks: 0.15
+    - _Shine: 15
     - _fAtt: 1
     m_Colors:
     - _PointLightColor: {r: 0, g: 0, b: 0, a: 1}

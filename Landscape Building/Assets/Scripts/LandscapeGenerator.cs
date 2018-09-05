@@ -84,13 +84,13 @@ public class LandscapeGenerator : MonoBehaviour
         {
             list.Add(Random.ColorHSV(0.11f, 0.14f, 0.5f, 0.6f, 0.7f, 0.8f));
         }
-        else if (y < heightLimit*3/4)
+        else if (y < heightLimit*0.4)
         {
             list.Add(Random.ColorHSV(0.3f, 0.36f, 0.5f, 0.6f, 0.3f, 0.4f));
         }
         else
         {
-            list.Add(Random.ColorHSV(0.5f, 0.53f, 0.5f, 0.7f, 0.8f, 1f));
+            list.Add(Random.ColorHSV(0.8f, 1f, 0f, 0f, 0.8f, 1f));
         }
 
         return new Vector3(x, y, z);
