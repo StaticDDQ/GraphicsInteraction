@@ -1,17 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class LandscapeGenerator : MonoBehaviour
 {
-    public float size = 50;
-    public int iterations = 6;
-    public float heightLimit = 50;
-    public float smoothness = 0.5f;
+    private const float DEFAULT_SIZE = 100.0f;
+    private const int DEFAULT_ITER = 6;
+    private const float DEFAULT_HEIGHTLIM = 80.0f;
+    private const float DEFAULT_SMOOTHNESS = 0.6f;
+
+    private const float SMOOTHNESS_LOWER_BOUND = 0.0f;
+    private const float SMOOTHNESS_UPPER_BOUND = 1.0f;
+
+    private const float SHORE_GRASS_BOUNDARY = 0.05f;
+    private const float GRASS_SNOW_BOUNDARY = 0.25f;
+
+    public float size = DEFAULT_SIZE;
+    public int iterations = DEFAULT_ITER;
+    public float heightLimit = DEFAULT_HEIGHTLIM;
+    public float smoothness = DEFAULT_SMOOTHNESS;
 
     // Use this for initialization
     void Start()
     {
+        if (smoothness <= SMOOTHNESS_LOWER_BOUND || smoothness >= SMOOTHNESS_UPPER_BOUND)
+        {
+            smoothness = DEFAULT_SMOOTHNESS;
+        }
+
         GetComponent<MeshFilter>().sharedMesh = this.CreateLandscapeMesh();
         GetComponent<MeshCollider>().sharedMesh = GetComponent<MeshFilter>().sharedMesh;
     }
@@ -23,10 +40,11 @@ public class LandscapeGenerator : MonoBehaviour
 
         // Initialise height map of required size and run diamond-square algorithm
         float[,] heightMap = CreateHeightMap(iterations);
-        heightMap = DiamondSquareGenerator(heightMap);
+        int size = heightMap.GetLength(0);
+        DiamondSquareGenerator(heightMap, size);
+        SetZeroAvgHeight(heightMap, size);
 
         // Initialise variables for vector creation
-        int size = heightMap.GetLength(0);
         List<Vector3> vectorList = new List<Vector3>();
         List<Color> colorList = new List<Color>();
         List<Vector3> normalList = new List<Vector3>();
@@ -36,13 +54,7 @@ public class LandscapeGenerator : MonoBehaviour
         {
             for (int j = 0; j < size - 1; j++)
             {
-                vectorList.Add(CreateVectorFromMap(i + 1, j, heightMap, colorList));
-                vectorList.Add(CreateVectorFromMap(i, j, heightMap, colorList));
-                vectorList.Add(CreateVectorFromMap(i, j + 1, heightMap, colorList));
-
-                vectorList.Add(CreateVectorFromMap(i, j + 1, heightMap, colorList));
-                vectorList.Add(CreateVectorFromMap(i + 1, j + 1, heightMap, colorList));
-                vectorList.Add(CreateVectorFromMap(i + 1, j, heightMap, colorList));
+                DrawTriangles(vectorList, heightMap, i, j, colorList);
             }
         }
 
@@ -74,25 +86,12 @@ public class LandscapeGenerator : MonoBehaviour
     }
 
     // Takes the height map and coordinates as input, outputs a vector corresponding with coordinates' height
-    Vector3 CreateVectorFromMap(int i, int j, float[,] map, List<Color> list)
+    Vector3 CreateVectorFromMap(int i, int j, float[,] map, List<Color> clist)
     {
         float x = (-size / 2) + (i * (size / (map.GetLength(0) - 1)));
         float y = map[i, j];
         float z = (-size / 2) + (j * (size / (map.GetLength(0) - 1)));
-
-        if (y < heightLimit*0.05)
-        {
-            list.Add(Random.ColorHSV(0.11f, 0.14f, 0.5f, 0.6f, 0.7f, 0.8f));
-        }
-        else if (y < heightLimit*0.42)
-        {
-            list.Add(Random.ColorHSV(0.3f, 0.36f, 0.5f, 0.6f, 0.3f, 0.4f));
-        }
-        else
-        {
-            list.Add(Random.ColorHSV(0.8f, 1f, 0f, 0f, 0.8f, 1f));
-        }
-
+        SetColors(clist, map, i, j);
         return new Vector3(x, y, z);
     }
 
@@ -102,11 +101,9 @@ public class LandscapeGenerator : MonoBehaviour
     /// </summary>
     /// <param name="heightMap"></param>
     /// <returns> Generated heightmap </returns>
-    float[,] DiamondSquareGenerator(float[,] heightMap)
+    void DiamondSquareGenerator(float[,] heightMap, int size)
     {
         // Decrease iteration scale (step) by factor of 2 per iteration
-        int size = heightMap.GetLength(0);
-        
         for (int step = (size - 1) / 2; step >= 1; step /= 2)
         {
             // Diamond Step
@@ -125,12 +122,12 @@ public class LandscapeGenerator : MonoBehaviour
             {
                 for (int j = ((i + step) % (2 * step)); j < size; j += 2 * step)
                 {
-                    try
+                    if (i > 0 && j > 0 && i < size - 1 && j < size - 1)
                     {
                         // Get average of surrounding coordinates horizontally/vertically
                         heightMap[i, j] = (heightMap[i, j - step] + heightMap[i, j + step] + heightMap[i - step, j] + heightMap[i + step, j]) / 4;
                     }
-                    catch // If code yields error from out of range index, must be border coordinate, move to catch
+                    else // If code yields error from out of range index, must be border coordinate, move to catch
                     {
                         // Pushes coordinates back into target coordinate, initialized to 0 so doesn't affect average
                         heightMap[i, j] = (heightMap[i, Mathf.Max(0, j - step)] + heightMap[i, Mathf.Min(size - 1, j + step)] + heightMap[Mathf.Max(0, i - step), j] + heightMap[Mathf.Min(size - 1, i + step), j]) / 3;
@@ -139,7 +136,6 @@ public class LandscapeGenerator : MonoBehaviour
                 }
             }
         }
-        return heightMap;
     }
     #endregion
 
@@ -157,10 +153,10 @@ public class LandscapeGenerator : MonoBehaviour
         float[,] heightMap = new float[size, size];
 
         // Initialize corners with random heights within bounds
-        heightMap[0, 0] = Random.Range(-heightLimit*0.2f,heightLimit*0.25f);
-        heightMap[0, size - 1] = Random.Range(-heightLimit * 0.2f, heightLimit * 0.25f);
-        heightMap[size - 1, 0] = Random.Range(-heightLimit * 0.2f, heightLimit * 0.25f);
-        heightMap[size - 1, size - 1] = Random.Range(-heightLimit * 0.2f, heightLimit * 0.25f);
+        heightMap[0, 0] = Random.Range(-heightLimit * 0.5f, heightLimit*0.5f);
+        heightMap[0, size - 1] = Random.Range(-heightLimit * 0.5f, heightLimit * 0.5f);
+        heightMap[size - 1, 0] = Random.Range(-heightLimit * 0.5f, heightLimit * 0.5f);
+        heightMap[size - 1, size - 1] = Random.Range(-heightLimit * 0.5f, heightLimit * 0.5f);
 
         return heightMap;
     }
@@ -188,5 +184,55 @@ public class LandscapeGenerator : MonoBehaviour
     float calcRandOffset()
     {
         return heightLimit * Random.value - heightLimit * 0.5f;
+    }
+
+    void SetZeroAvgHeight(float[,] heightMap, int size)
+    {
+        float totalHeight = 0f;
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                totalHeight += heightMap[i, j];
+            }
+        }
+
+        float avg = totalHeight / Mathf.Pow(size, 2);
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                heightMap[i, j] -= avg;
+            }
+        }
+    }
+
+    void DrawTriangles(List<Vector3> list, float[,] map, int i, int j, List<Color> clist)
+    {
+        list.Add(CreateVectorFromMap(i + 1, j, map, clist));
+        list.Add(CreateVectorFromMap(i, j, map, clist));
+        list.Add(CreateVectorFromMap(i, j + 1, map, clist));
+
+        list.Add(CreateVectorFromMap(i, j + 1, map, clist));
+        list.Add(CreateVectorFromMap(i + 1, j + 1, map, clist));
+        list.Add(CreateVectorFromMap(i + 1, j, map, clist));
+    }
+
+    void SetColors(List<Color> list, float[,] map, int i, int j)
+    {
+        float y = map[i, j];
+
+        if (y < heightLimit * SHORE_GRASS_BOUNDARY)
+        {
+            list.Add(Random.ColorHSV(0.11f, 0.14f, 0.5f, 0.6f, 0.7f, 0.8f));
+        }
+        else if (y < heightLimit * GRASS_SNOW_BOUNDARY)
+        {
+            list.Add(Random.ColorHSV(0.3f, 0.36f, 0.5f, 0.6f, 0.3f, 0.4f));
+        }
+        else
+        {
+            list.Add(Random.ColorHSV(0.8f, 1f, 0f, 0f, 0.8f, 1f));
+        }
     }
 }
