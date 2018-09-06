@@ -7,7 +7,7 @@
 		_fAtt("Attenuation", float) = 1
 		_Ka("Ka", float) = 1
 		_Ks("Ks", float) = 1
-		_Shine("Shinyness", float) = 1
+		_Shine("Shinyness", Range(0.0,15.0)) = 10
 	}
 	SubShader
 	{
