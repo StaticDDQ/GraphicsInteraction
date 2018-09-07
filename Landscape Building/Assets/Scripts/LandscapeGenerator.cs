@@ -101,7 +101,6 @@ public class LandscapeGenerator : MonoBehaviour
         return m;
     }
 
-    #region CreateHeightMap
     /// <summary>
     /// Initialize the heightmap by setting the number of equally divided points
     /// and setting the corner values with random amount
@@ -122,9 +121,7 @@ public class LandscapeGenerator : MonoBehaviour
 
         return heightMap;
     }
-    #endregion
 
-    #region DiamondSquare
     /// <summary>
     /// Populate the heightmap using the Diamond Square Algorithm
     /// </summary>
@@ -166,7 +163,6 @@ public class LandscapeGenerator : MonoBehaviour
             }
         }
     }
-    #endregion
 
     // Takes the height map size and the current iteration scale, outputs a weighted random offset for the height
     float calcWeightedOffset(int step, int size)

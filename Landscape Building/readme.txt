@@ -27,3 +27,5 @@ Landscape generation:
 - Ranges:
 	- Iterations = [0, 6] (Past 6 iterations, number of vertices exceed 65536)
 	- Smoothness = [0, 1] (0 = Sharp surfaces, 0.5 = Slightly rugged, 1 = Entirely smooth)
+
+- Due to having an iteration of 6, loading the terrain will be relatively long, the time can be reduced by decreasing the number of iterations in the Landscape Generation script in the inspector with a cost of detail.
