@@ -1,20 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class LandscapeGenerator : MonoBehaviour
 {
+    // Default landscape generation constants
     private const float DEFAULT_SIZE = 100.0f;
     private const int DEFAULT_ITER = 6;
     private const float DEFAULT_HEIGHTLIM = 80.0f;
     private const float DEFAULT_SMOOTHNESS = 0.6f;
 
+    // Smoothness range constants
     private const float SMOOTHNESS_LOWER_BOUND = 0.0f;
     private const float SMOOTHNESS_UPPER_BOUND = 1.0f;
 
-    private const float SHORE_GRASS_BOUNDARY = 0.05f;
-    private const float GRASS_SNOW_BOUNDARY = 0.25f;
+    // Landscape coloring constants
+    private const float SHORE_UPPER_LIM = 0.02f;
+    private const float GRASS_UPPER_LIM = 0.25f;
+    private const float BOUNDARY_WIDTH = 0.05f;
+    private readonly Color SAND_COLOR = new Color(0.75f, 0.65f, 0.33f);
+    private readonly Color GRASS_COLOR = new Color(0.16f, 0.35f, 0.16f);
+    private readonly Color SNOW_COLOR = new Color(0.9f, 0.9f, 0.9f);
 
     public float size = DEFAULT_SIZE;
     public int iterations = DEFAULT_ITER;
@@ -24,11 +30,18 @@ public class LandscapeGenerator : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        if (smoothness <= SMOOTHNESS_LOWER_BOUND || smoothness >= SMOOTHNESS_UPPER_BOUND)
+        // Range from 0 to 1, set default if user input is out of bounds
+        if (smoothness < SMOOTHNESS_LOWER_BOUND || smoothness > SMOOTHNESS_UPPER_BOUND)
         {
             smoothness = DEFAULT_SMOOTHNESS;
         }
 
+        // Range from 0 to 6, set defaults if user input is out of bounds
+        if (iterations < 0 || iterations > DEFAULT_ITER)
+        {
+            iterations = DEFAULT_ITER;
+        }
+        
         GetComponent<MeshFilter>().sharedMesh = this.CreateLandscapeMesh();
         GetComponent<MeshCollider>().sharedMesh = GetComponent<MeshFilter>().sharedMesh;
     }
@@ -49,18 +62,20 @@ public class LandscapeGenerator : MonoBehaviour
         List<Color> colorList = new List<Color>();
         List<Vector3> normalList = new List<Vector3>();
 
-        // Draw 2 triangles (6 vectors) for every pair of 4 heights in a square
+        // Draw triangles and set color for every pair of 4 heights in a square
         for (int i = 0; i < size - 1; i++)
         {
             for (int j = 0; j < size - 1; j++)
             {
-                DrawTriangles(vectorList, heightMap, i, j, colorList);
+                DrawTriangles(vectorList, heightMap, i, j);
+                SetColors(colorList, heightMap, i, j);
             }
         }
-
+        
         m.vertices = vectorList.ToArray();
         m.colors = colorList.ToArray();
 
+        // Calculate polygon normals for shader
         for (int i = 0; i < m.vertices.Length; i += 3)
         {
             Vector3 side1 = vectorList[i + 1] - vectorList[i];
@@ -75,6 +90,7 @@ public class LandscapeGenerator : MonoBehaviour
 
         m.normals = normalList.ToArray();
 
+        // Set indices as triangle points
         int[] triangles = new int[m.vertices.Length];
         for (int i = 0; i < m.vertices.Length; i++)
         {
@@ -85,22 +101,35 @@ public class LandscapeGenerator : MonoBehaviour
         return m;
     }
 
-    // Takes the height map and coordinates as input, outputs a vector corresponding with coordinates' height
-    Vector3 CreateVectorFromMap(int i, int j, float[,] map, List<Color> clist)
+    #region CreateHeightMap
+    /// <summary>
+    /// Initialize the heightmap by setting the number of equally divided points
+    /// and setting the corner values with random amount
+    /// </summary>
+    /// <param name="iter"> Iteration to determine the grid size </param>
+    /// <returns> Initialized heightmap </returns>
+    float[,] CreateHeightMap(int iter)
     {
-        float x = (-size / 2) + (i * (size / (map.GetLength(0) - 1)));
-        float y = map[i, j];
-        float z = (-size / 2) + (j * (size / (map.GetLength(0) - 1)));
-        SetColors(clist, map, i, j);
-        return new Vector3(x, y, z);
+        // Create height map of size 2^#ofiterations + 1
+        int size = (int)Mathf.Pow(2, iter) + 1;
+        float[,] heightMap = new float[size, size];
+
+        // Initialize corners with random heights within bounds
+        heightMap[0, 0] = Random.Range(-heightLimit * 0.5f, heightLimit * 0.5f);
+        heightMap[0, size - 1] = Random.Range(-heightLimit * 0.5f, heightLimit * 0.5f);
+        heightMap[size - 1, 0] = Random.Range(-heightLimit * 0.5f, heightLimit * 0.5f);
+        heightMap[size - 1, size - 1] = Random.Range(-heightLimit * 0.5f, heightLimit * 0.5f);
+
+        return heightMap;
     }
+    #endregion
 
     #region DiamondSquare
     /// <summary>
     /// Populate the heightmap using the Diamond Square Algorithm
     /// </summary>
     /// <param name="heightMap"></param>
-    /// <returns> Generated heightmap </returns>
+    /// <param name="size"></param>
     void DiamondSquareGenerator(float[,] heightMap, int size)
     {
         // Decrease iteration scale (step) by factor of 2 per iteration
@@ -139,39 +168,13 @@ public class LandscapeGenerator : MonoBehaviour
     }
     #endregion
 
-    #region CreateHeightMap
-    /// <summary>
-    /// Initialize the heightmap by setting the number of equally divided points
-    /// and setting the corner values with random amount
-    /// </summary>
-    /// <param name="iter"> Iteration to determine the grid size </param>
-    /// <returns> Initilized heatmap </returns>
-    float[,] CreateHeightMap(int iter)
-    {
-        // Create height map of size 2^#ofiterations + 1
-        int size = (int)Mathf.Pow(2, iter) + 1;
-        float[,] heightMap = new float[size, size];
-
-        // Initialize corners with random heights within bounds
-        heightMap[0, 0] = Random.Range(-heightLimit * 0.5f, heightLimit*0.5f);
-        heightMap[0, size - 1] = Random.Range(-heightLimit * 0.5f, heightLimit * 0.5f);
-        heightMap[size - 1, 0] = Random.Range(-heightLimit * 0.5f, heightLimit * 0.5f);
-        heightMap[size - 1, size - 1] = Random.Range(-heightLimit * 0.5f, heightLimit * 0.5f);
-
-        return heightMap;
-    }
-    #endregion
-
     // Takes the height map size and the current iteration scale, outputs a weighted random offset for the height
     float calcWeightedOffset(int step, int size)
     {
         // Weight decrease is proportional to iteration scale (step) decrease
         float baseWeight = 2 * (float)step / (size - 1);
 
-        // Factor smoothness into weight as linear function. For example, as step size decreases:
-        // MOVE THIS TO README.MD
-        // 0 < smoothness < 0.5 : starting weight is constant at 1, y-intercept decreases, gradient steepens
-        // 0.5 < smoothness < 1 : starting weight decreases, y-intercept is constant at 0, gradient flattens
+        // Factor smoothness into weight as linear function (see Readme)
         float gradient = 1 - Mathf.Abs(1 - 2 * smoothness);
         float intercept = Mathf.Max(0, 1 - 2 * smoothness);
         float realWeight = gradient * baseWeight + intercept;
@@ -186,6 +189,7 @@ public class LandscapeGenerator : MonoBehaviour
         return heightLimit * Random.value - heightLimit * 0.5f;
     }
 
+    // Takes the height map and apply offset such that average height is 0
     void SetZeroAvgHeight(float[,] heightMap, int size)
     {
         float totalHeight = 0f;
@@ -207,32 +211,61 @@ public class LandscapeGenerator : MonoBehaviour
         }
     }
 
-    void DrawTriangles(List<Vector3> list, float[,] map, int i, int j, List<Color> clist)
+    // Add 6 vertices to the list that correspond to 2 triangles formed by the square with top-left i and j
+    void DrawTriangles(List<Vector3> list, float[,] map, int i, int j)
     {
-        list.Add(CreateVectorFromMap(i + 1, j, map, clist));
-        list.Add(CreateVectorFromMap(i, j, map, clist));
-        list.Add(CreateVectorFromMap(i, j + 1, map, clist));
+        list.Add(CreateVectorFromMap(i + 1, j, map));
+        list.Add(CreateVectorFromMap(i, j, map));
+        list.Add(CreateVectorFromMap(i, j + 1, map));
 
-        list.Add(CreateVectorFromMap(i, j + 1, map, clist));
-        list.Add(CreateVectorFromMap(i + 1, j + 1, map, clist));
-        list.Add(CreateVectorFromMap(i + 1, j, map, clist));
+        list.Add(CreateVectorFromMap(i, j + 1, map));
+        list.Add(CreateVectorFromMap(i + 1, j + 1, map));
+        list.Add(CreateVectorFromMap(i + 1, j, map));
     }
 
+    // Takes the height map and coordinates as input, outputs a vector corresponding with coordinates' height
+    Vector3 CreateVectorFromMap(int i, int j, float[,] map)
+    {
+        float x = (-size / 2) + (i * (size / (map.GetLength(0) - 1)));
+        float y = map[i, j];
+        float z = (-size / 2) + (j * (size / (map.GetLength(0) - 1)));
+        return new Vector3(x, y, z);
+    }
+
+    // Add 6 colors to the list that correspond to the triangle points
     void SetColors(List<Color> list, float[,] map, int i, int j)
     {
-        float y = map[i, j];
+        list.Add(getColorFromHeight(map[i + 1, j]));
+        list.Add(getColorFromHeight(map[i, j]));
+        list.Add(getColorFromHeight(map[i, j + 1]));
 
-        if (y < heightLimit * SHORE_GRASS_BOUNDARY)
+        list.Add(getColorFromHeight(map[i, j + 1]));
+        list.Add(getColorFromHeight(map[i + 1, j + 1]));
+        list.Add(getColorFromHeight(map[i + 1, j]));
+    }
+
+    // Set different colors based on height
+    Color getColorFromHeight(float height)
+    {
+        if (height < heightLimit * SHORE_UPPER_LIM)
         {
-            list.Add(Random.ColorHSV(0.11f, 0.14f, 0.5f, 0.6f, 0.7f, 0.8f));
+            return SAND_COLOR;
         }
-        else if (y < heightLimit * GRASS_SNOW_BOUNDARY)
+        else if (height < heightLimit * (SHORE_UPPER_LIM + BOUNDARY_WIDTH))
         {
-            list.Add(Random.ColorHSV(0.3f, 0.36f, 0.5f, 0.6f, 0.3f, 0.4f));
+            return Color.Lerp(SAND_COLOR, GRASS_COLOR, (height - heightLimit * SHORE_UPPER_LIM) / (heightLimit * BOUNDARY_WIDTH));
+        }
+        else if (height < heightLimit * GRASS_UPPER_LIM)
+        {
+            return GRASS_COLOR;
+        }
+        else if (height < heightLimit * (GRASS_UPPER_LIM + BOUNDARY_WIDTH))
+        {
+            return Color.Lerp(GRASS_COLOR, SNOW_COLOR, (height - heightLimit * GRASS_UPPER_LIM) / (heightLimit * BOUNDARY_WIDTH));
         }
         else
         {
-            list.Add(Random.ColorHSV(0.8f, 1f, 0f, 0f, 0.8f, 1f));
+            return SNOW_COLOR;
         }
     }
 }
