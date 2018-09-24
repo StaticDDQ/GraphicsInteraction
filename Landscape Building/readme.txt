@@ -24,6 +24,7 @@ Landscape generation:
 - Smoothness affects the rate at which the random offset applied to the heights decreases as a 2-part linear function seperated by Mathf.abs():
 	- 0 to 0.5 : First iteration weight is constant at 1, final iteration weight decreases, gradient steepens
 	- 0.5 to 1 : First iteration weight decreases, limit of final iteration weight is constant at 0, gradient flattens
+- Iterations affects the number of vertices generated, and thus the level of detail of the landscape; the rendering time for the landscape is proportional to the number of iterations
 - Ranges:
 	- Iterations = [0, 6] (Past 6 iterations, number of vertices exceed 65536)
 	- Smoothness = [0, 1] (0 = Sharp surfaces, 0.5 = Slightly rugged, 1 = Entirely smooth)
