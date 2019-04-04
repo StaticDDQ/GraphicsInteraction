@@ -1,2 +1,2 @@
 # GraphicsInteraction
-Repo for Assignment 1 and 2 of Graphics and Interactions
+Repo for Assignment 1 of the subject Graphics and Interaction. The assignment is to procedurally generate a mountain terrain with appropriate colouring when the terrain reaches a certain height. The project also contains a water flow created using CG programming as well as a sun that rotates around the terrain while providing light. The terrain is generated using the Diamond-Square algorithm. 
